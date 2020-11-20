@@ -7,29 +7,31 @@
           <li>
             <span class="teal-text">Name</span>
             <span class="grey-text text-darken-3">message</span>
-            <span class="grey-text time">time</span>
+            <div class="grey-text time">time</div>
           </li>
         </ul>
       </div>
       <div class="card-action">
-        <form>
-          <input type="text" placeholder="Message...">
-        </form>
+        <NewMessage :name="name" />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-export default {
-  name: 'Chat',
-  props: ['name'],
-  data() {
-    return {
+  import NewMessage from '@/components/NewMessage'
+  export default {
+    name: 'Chat',
+    props: ['name'],
+    components: {
+      NewMessage
+    },
+    data() {
+      return {
 
+      }
     }
   }
-}
 </script>
 
 <style scoped>
@@ -47,7 +49,7 @@ export default {
   }
 
   .chat .time {
-    display: block;
+    /* display: block; */
     font-size: 1rem;
   }
 
