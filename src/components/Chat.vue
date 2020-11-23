@@ -3,11 +3,11 @@
     <h2 class="center teal-text">Ninja Chat</h2>
     <div class="card">
       <div class="card-content">
-        <ul class="messages">
-          <li>
-            <span class="teal-text">Name</span>
-            <span class="grey-text text-darken-3">message</span>
-            <div class="grey-text time">time</div>
+        <ul class="messages" v-chat-scroll>
+          <li v-for="message in messages" :key="message.id">
+            <span class="teal-text">{{message.name}}</span>
+            <span class="grey-text text-darken-3">{{message.content}}</span>
+            <div class="grey-text time">{{message.timestamp}}</div>
           </li>
         </ul>
       </div>
@@ -20,6 +20,9 @@
 
 <script>
   import NewMessage from '@/components/NewMessage'
+  import db from '@/firebase/init'
+  import moment from 'moment'
+
   export default {
     name: 'Chat',
     props: ['name'],
@@ -28,8 +31,26 @@
     },
     data() {
       return {
-
+        messages: []
       }
+    },
+    created(){
+      let ref= db.collection('messages').orderBy('timestamp')
+
+      ref.onSnapshot(snapshot => {
+        console.table(snapshot.docChanges().forEach(change => {
+            if(change.type == 'added') {
+              let doc = change.doc
+              this.messages.push({
+                id: doc.id,
+                name: doc.data().name,
+                content: doc.data().content,
+                timestamp: moment(doc.data().timestamp).format('lll')
+              })
+            }
+          }
+        ))
+      })
     }
   }
 </script>
@@ -45,12 +66,34 @@
   }
 
   .chat span {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
 
   .chat .time {
     /* display: block; */
-    font-size: 1rem;
+    font-size: .75rem;
+  }
+
+  .messages {
+    max-height: 300px;
+    overflow: auto;
+  }
+
+  ::-webkit-scrollbar {
+    height: 0.6rem;
+    width: 0.6rem;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+      to bottom,
+      hsla(174, 42%, 65%, 0.514) 0%,
+      hsla(174, 42%, 65%, 0.514) 100%
+    );
+    border-radius: 0px;
+  }
+  ::-webkit-scrollbar-track {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
   }
 
 </style>
